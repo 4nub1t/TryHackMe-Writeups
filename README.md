@@ -1,31 +1,27 @@
 # TryHackMe Writeups
 
-## Descripción
+## Description
 
-**Español:**  
-Repositorio que contiene mis writeups de máquinas y labs de TryHackMe, incluyendo pasos, comandos, capturas y análisis de cada reto para aprendizaje y referencia personal.
-
-**English:**  
 Repository containing my writeups for TryHackMe machines and labs, including step-by-step procedures, commands, screenshots, and analysis of each challenge for learning and personal reference.
 
 ---
 
-## Índice de máquinas / Labs
+## Machines / Labs Index
 
 - [NetSec Challenge](NetSec-Challenge/writeup.md)
 
 ---
 
-## Cómo usar este repositorio
+## How to use this repository
 
-Cada carpeta corresponde a un lab o máquina de TryHackMe y contiene:
+Each folder corresponds to a TryHackMe lab or machine and contains:
 
-- `writeup.md` → explicación paso a paso del reto  
-- `screenshots/` → capturas de pantalla relevantes  
-- `extra/` → archivos adicionales (scripts, wordlists, pcap, etc.)
+- `writeup.md` → step-by-step explanation of the challenge  
+- `screenshots/` → relevant screenshots  
+- `extra/` → additional files (scripts, wordlists, pcap, etc.)
 
 ---
 
-## Nota de ética
+## Ethics Note
 
-> ⚠️ Estos writeups son con fines educativos y personales. No deben usarse para actividades ilegales.
+> ⚠️ These writeups are for educational and personal purposes only. They should not be used for illegal activities.
