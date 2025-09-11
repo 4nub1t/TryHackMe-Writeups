@@ -18,7 +18,6 @@ Each folder corresponds to a TryHackMe lab or machine and contains:
 
 - `writeup.md` → step-by-step explanation of the challenge  
 - `screenshots/` → relevant screenshots  
-- `extra/` → additional files (scripts, wordlists, pcap, etc.)
 
 ---
 
