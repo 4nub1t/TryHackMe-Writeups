@@ -9,6 +9,7 @@ Repository containing my writeups for TryHackMe machines and labs, including ste
 ## Machines / Labs Index
 
 - [NetSec Challenge](Net-Sec-Challenge/writeup.md)
+- [Vulnerability Capstone](Vulnerability-Capstone/writeup.md)
 
 ---
 
