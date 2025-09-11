@@ -145,11 +145,11 @@ This challenge reinforced fundamental skills in:
 * Enumerating services with **Nmap**
 * Extracting information from banners with **Telnet**
 * Cracking credentials with **Hydra**
-
-## Disclaimer
-> ⚠️ This writeup is for educational purposes only. Do not use these techniques outside of authorized environments.
----
 * Using FTP clients to retrieve sensitive files
 * Understanding IDS evasion with Nmap scan types
 
 The **Net-Sec-Challenge** demonstrates how simple tools can uncover sensitive information if services are misconfigured or use weak credentials.
+
+## Disclaimer
+> ⚠️ This writeup is for educational purposes only. Do not use these techniques outside of authorized environments.
+---
