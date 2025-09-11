@@ -1,6 +1,6 @@
 # Net-Sec-Challenge Writeup
 
-This is a formal writeup for the **Net-Sec-Challenge** room on TryHackMe. The challenge tests the skills learned in the Network Security module, using tools like **Nmap**, **Telnet**, and **Hydra**. The following sections cover each question and how it was solved.
+This is a formal writeup for the **Net-Sec-Challenge** room on TryHackMe rated as medium. The challenge tests the skills learned in the Network Security module, using tools like **Nmap**, **Telnet**, and **Hydra**. The following sections cover each question and how it was solved.
 
 ---
 
