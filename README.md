@@ -10,6 +10,7 @@ Repository containing my writeups for TryHackMe machines and labs, including ste
 
 - [NetSec Challenge](Net-Sec-Challenge/writeup.md)
 - [Vulnerability Capstone](Vulnerability-Capstone/writeup.md)
+- [Simple CTF](Simple-CTF/writeup.md)
 
 ---
 
