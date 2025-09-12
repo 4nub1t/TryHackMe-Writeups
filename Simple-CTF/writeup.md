@@ -185,7 +185,5 @@ This writeup follows the classic CTF flow: enumerate services, find web applicat
 
 ## Disclaimer
 > ⚠️ This writeup is for educational purposes only and must be used in authorized environments (labs / CTFs). Do not apply these techniques against systems without explicit permission.
-## Disclaimer
-> ⚠️ This writeup is for **educational purposes only** and for use in authorized environments (labs / CTFs). Do not apply these techniques against systems without explicit permission from the owner.
 
 ---
