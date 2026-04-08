@@ -21,6 +21,7 @@ Each writeup follows a practical penetration testing methodology: recon, enumera
 
 | Machine / Lab                                                 | Category        | Difficulty | Key techniques / vulns                                   |
 |---------------------------------------------------------------|-----------------|-----------|----------------------------------------------------------|
+| [Blue](Blue/writeup.md)                                      | Windows         | Easy      | SMB enumeration, MS17-010 (EternalBlue), RCE, hashdump, NTLM cracking |
 | [NetSec Challenge](Net-Sec-Challenge/writeup.md)              | Network / Linux | Easy      | Port scanning, service enumeration, privilege escalation |
 | [Vulnerability Capstone](Vulnerability-Capstone/writeup.md)   | Web / Windows   | Medium    | SQLi, file upload, misconfiguration, privilege escalation |
 | [Simple CTF](Simple-CTF/writeup.md)                           | Web / Linux     | Easy      | Directory brute-force, LFI, basic privilege escalation   |
