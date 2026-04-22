@@ -25,6 +25,8 @@ Each writeup follows a practical penetration testing methodology: recon, enumera
 | [NetSec Challenge](Net-Sec-Challenge)              | Network / Linux | Easy      | Port scanning, service enumeration, privilege escalation |
 | [Vulnerability Capstone](Vulnerability-Capstone)   | Web / Windows   | Medium    | SQLi, file upload, misconfiguration, privilege escalation |
 | [Simple CTF](Simple-CTF)                           | Web / Linux     | Easy      | Directory brute-force, LFI, basic privilege escalation   |
+| [Hammer](Hammer)                                   | Web / Linux     | Medium    | Web enumeration, authentication flaws, command injection, privilege escalation |
+
 
 *(Adjust categories, difficulty and techniques as needed.)*
 
