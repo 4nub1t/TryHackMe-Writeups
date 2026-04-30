@@ -27,8 +27,6 @@ This repository contains my TryHackMe writeups as part of my learning path towar
 | [Hammer](Hammer) | Web / Linux | Medium | Web enumeration, 2FA bypass, rate limit evasion, JWT forgery, privilege escalation |
 | [RootMe](RootMe) | Web / Linux | Easy | Directory brute-force, file upload bypass, PHP reverse shell, SUID abuse |
 
-*(Adjust categories, difficulty and techniques as needed.)*
-
 ***
 
 ## Repository structure
