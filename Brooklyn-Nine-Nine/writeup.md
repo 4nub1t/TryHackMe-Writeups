@@ -276,75 +276,7 @@ A root shell is spawned.
 
 > **What this does**: nano's "Read File" command supports executing an external command and piping its output into the editor. Since nano runs as root, the shell spawned inherits root privileges. `1>&0 2>&0` redirects stdout and stderr back to the terminal, making the shell interactive.
 
-### Retrieving root.txt# TryHackMe – RootMe
-
-This is a formal writeup for the **RootMe** room on TryHackMe, rated as **easy**.  
-The challenge teaches **web application exploitation** through **directory enumeration**, **file upload bypass**, **PHP reverse shell** deployment, and **SUID privilege escalation** via Python.
-
-***
-
-## Overview
-
-Objectives of the room:
-
-- Perform port scanning to identify exposed services.
-- Enumerate hidden directories using GoBuster.
-- Exploit a file upload form to deploy a PHP reverse shell.
-- Bypass extension filtering by using alternative PHP extensions.
-- Obtain a shell, stabilize it, and retrieve the user flag.
-- Identify a misconfigured SUID binary and escalate to root.
-- Retrieve the root flag.
-
-***
-
-## Port Scanning and Service Discovery
-
-### Open ports
-
-Full port scan to identify all services:
-
-```bash
-nmap -sV -sC --min-rate 5000 -p- <TARGET>
-```
-
-**Result**: 2 ports open:
-- **22/tcp** (ssh – OpenSSH)
-- **80/tcp** (http – Apache httpd 2.4.41)
-
-**Apache version**: `2.4.41` (obtained via `-sV` flag).  
-**Service on port 22**: `ssh`.
-
-***
-
-## Web Application Enumeration
-
-### Directory discovery with GoBuster
-
-With no visible attack surface on the landing page, directory brute-forcing is performed to uncover hidden endpoints:
-
-```bash
-gobuster dir -u http://<TARGET> -w /usr/share/wordlists/dirb/common.txt
-```
-
-**Notable results**:
-- `/panel/` — file upload form, high-value target.
-- `/uploads/` — directory where uploaded files are stored.
-
-### Upload form analysis
-
-Navigating to `http://<TARGET>/panel/` reveals a file upload interface with no visible client-side restrictions. This immediately suggests a potential **unrestricted file upload** vulnerability — a direct vector for deploying a web shell or reverse shell.
-
-***
-
-## Initial Access – PHP Reverse Shell via Upload Bypass
-
-### Preparing the listener
-
-Before uploading anything, set up a Netcat listener on the attack machine:
-
-```bash
-nc -nlvp 4444
-
+### Retrieving root.txt
 
 ```bash
 cd /root
