@@ -2,7 +2,7 @@
 
 ## Description
 
-This repository contains my TryHackMe writeups as part of my learning path towards CPTS and OSCP. Each writeup follows a practical penetration testing methodology: recon, enumeration, exploitation, privilege escalation and reporting.
+This repository contains my TryHackMe writeups as part of my learning path towards OSCP. Each writeup follows a practical penetration testing methodology: recon, enumeration, exploitation, privilege escalation and reporting.
 
 ***
 
