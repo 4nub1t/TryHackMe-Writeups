@@ -26,6 +26,7 @@ This repository contains my TryHackMe writeups as part of my learning path towar
 | [Simple CTF](Simple-CTF) | Web / Linux | Easy | Directory brute-force, LFI, basic privilege escalation |
 | [Hammer](Hammer) | Web / Linux | Medium | Web enumeration, 2FA bypass, rate limit evasion, JWT forgery, privilege escalation |
 | [RootMe](RootMe) | Web / Linux | Easy | Directory brute-force, file upload bypass, PHP reverse shell, SUID abuse |
+| [Injectics](Injectics) | Web / Linux | Medium | Web exploitation, injection techniques, privilege escalation |
 
 ***
 
